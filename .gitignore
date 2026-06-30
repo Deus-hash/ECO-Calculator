@@ -1,0 +1,7 @@
+__pycache__/
+*.pyc
+.env
+*.bak
+*.old
+script_backup.js
+materials_db_web_backup.py

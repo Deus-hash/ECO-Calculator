@@ -1,0 +1,164 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>ЭКО — Экология Конструкций Ограждения</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <div class="app">
+    <header class="header">
+      <div class="header-inner">
+        <div class="header-left">
+          <div class="brand"><span class="brand-text"><span class="brand-name">Calc</span><span class="brand-craft">.Craft</span></span><span class="brand-sep">|</span><span class="brand-sub">Программа ЭКО</span></div>
+        </div>
+        <button class="btn-calc" id="btn-calculate">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="margin-right:6px"><polyline points="9 18 15 12 9 6"/></svg>
+          Рассчитать
+        </button>
+      </div>
+    </header>
+
+    <main>
+      <div class="hero">
+        <div class="hero-badge">
+          <img src="img/img01.svg" width="16" height="20" alt="">
+          <span>Программа ЭКО</span>
+        </div>
+        <h1 class="hero-title">Экология Конструкций Ограждения</h1>
+        <p class="hero-sub">Расчет и оценка теплотехнических и экологических параметров<br>наружных стен при проектировании зданий</p>
+        <button class="hero-arrow">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
+        </button>
+      </div>
+
+      <div class="grid-2col first-grid">
+        <section class="card">
+          <div class="card-head"><h2>Габариты стены</h2></div>
+          <div class="card-body">
+            <div class="field-row">
+              <div class="field"><label>Длина (м)</label><input type="number" class="input" id="wall-length" value="0" step="0.1"></div>
+              <div class="field"><label>Высота (м)</label><input type="number" class="input" id="wall-height" value="0" step="0.1"></div>
+            </div>
+          </div>
+        </section>
+
+        <section class="card">
+          <div class="card-head"><h2>Параметры региона</h2></div>
+          <div class="card-body">
+            <div class="field-row">
+              <div class="field"><label>ГСОП (градусо-сутки)</label><input type="number" class="input" id="gsop" value="0" step="1"></div>
+              <div class="field"><label>Площадь стен S (м²)</label><input type="number" class="input" id="wall-area-s" value="0" step="1"></div>
+            </div>
+          </div>
+        </section>
+      </div>
+
+      <div class="grid-2col">
+        <section class="card">
+          <div class="card-head"><h2>Проемы</h2></div>
+          <div class="card-body">
+            <div class="field-row">
+              <div class="field"><label>Двери</label><input type="number" class="input" id="door-count" value="0" min="0"></div>
+              <div class="field"><label>Ширина (м)</label><input type="number" class="input" id="door-width" value="0" step="0.05"></div>
+              <div class="field"><label>Высота (м)</label><input type="number" class="input" id="door-height" value="0" step="0.05"></div>
+            </div>
+            <div class="field-row">
+              <div class="field"><label>Окна</label><input type="number" class="input" id="window-count" value="0" min="0"></div>
+              <div class="field"><label>Ширина (м)</label><input type="number" class="input" id="window-width" value="0" step="0.05"></div>
+              <div class="field"><label>Высота (м)</label><input type="number" class="input" id="window-height" value="0" step="0.05"></div>
+            </div>
+          </div>
+        </section>
+
+        <section class="card">
+          <div class="card-head"><h2>Армирование</h2></div>
+          <div class="card-body">
+            <div class="field-row">
+              <div class="field w-full"><label>Вид арматуры</label>
+                <select class="input" id="rebar-type">
+                  <option value="none">Без армирования</option>
+                  <option value="steel">Металлическая кладочная сетка</option>
+                  <option value="fiberglass">Стеклопластиковая арматура</option>
+                  <option value="basalt">Базальтопластиковая арматура</option>
+                  <option value="carbon">Углепластиковая арматура</option>
+                </select>
+              </div>
+            </div>
+            <div class="field-row">
+              <div class="field"><label>Масса на 1 м² (кг)</label><input type="number" class="input" id="rebar-mass" value="0" min="0" step="0.1"></div>
+            </div>
+          </div>
+        </section>
+      </div>
+
+      <section class="card wall-card">
+        <div class="card-head"><h2>Конструкция стены</h2><div class="wall-total" id="wall-total"></div><button class="btn-add" id="btn-add-layer">+ Слой</button></div>
+        <div class="card-body wall-card-body">
+          <div class="wall-panel">
+            <div class="wall-bar-wrap">
+              <div class="wall-bar" id="wall-layers"></div>
+              <div class="wall-bar-dim" id="wall-bar-dim"></div>
+            </div>
+            <div class="wall-legend" id="wall-legend"></div>
+          </div>
+          <div class="layers-stack" id="layers-panel"></div>
+        </div>
+      </section>
+
+      <section class="card">
+        <div class="card-head"><h2>Результаты расчёта</h2><div class="badge">Запас <input type="number" class="badge-input" id="waste" value="0" min="0" max="30">&nbsp;%</div></div>
+        <div class="card-body">
+          <div class="results-grid">
+            <div class="res-group"><div class="res-group-title">Масса</div>
+              <div class="res-card"><div class="res-lbl">Масса 1 м² стены</div><div class="res-val" id="res-mass">—</div></div>
+              <div class="res-card accent"><div class="res-lbl">Общая масса стен</div><div class="res-val" id="res-mass-total">—</div></div>
+            </div>
+            <div class="res-group"><div class="res-group-title">Теплотехника</div>
+              <div class="res-card accent"><div class="res-lbl">R₀ усл (м²·°С/Вт)</div><div class="res-val" id="res-r0">—</div></div>
+              <div class="res-card"><div class="res-lbl">Потери Qст.год (кВт·ч/год)</div><div class="res-val" id="res-q">—</div></div>
+              <div class="res-card"><div class="res-lbl">Потери Qгод общие (кВт·ч)</div><div class="res-val" id="res-q-total">—</div></div>
+            </div>
+            <div class="res-group"><div class="res-group-title">Экология</div>
+              <div class="res-card"><div class="res-lbl">CO₂ выбросы (кгCO₂экв/м²)</div><div class="res-val" id="res-co2">—</div></div>
+              <div class="res-card"><div class="res-lbl">CO₂ выбросы общие (кгCO₂экв)</div><div class="res-val" id="res-co2-total">—</div></div>
+              <div class="res-card"><div class="res-lbl">Воплощ. энергия (МДж/м²)</div><div class="res-val" id="res-energy">—</div></div>
+              <div class="res-card"><div class="res-lbl">Воплощ. энергия общая (МДж)</div><div class="res-val" id="res-energy-total">—</div></div>
+            </div>
+            <div class="res-group"><div class="res-group-title">Газ</div>
+              <div class="res-card"><div class="res-lbl">Расход газа V₁ (м³/год·м²)</div><div class="res-val" id="res-gas">—</div></div>
+              <div class="res-card accent"><div class="res-lbl">Расход газа Vобщ (м³/год)</div><div class="res-val" id="res-gas-total">—</div></div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section class="card">
+        <div class="card-head"><h2>Исходные данные и расчётные показатели на 1 м² стены</h2></div>
+        <div class="card-body" id="detail-container"></div>
+      </section>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        <div class="footer-info">
+          <span class="footer-muted">IT.BGITU</span>
+          <span class="footer-dot">•</span>
+          <span class="footer-year">2026</span>
+        </div>
+      </div>
+    </footer>
+  </div>
+
+  <div class="modal-overlay" id="modal">
+    <div class="modal">
+      <div class="modal-head"><h3>Выберите материал</h3><button class="modal-close" id="modal-close">✕</button></div>
+      <div class="modal-body" id="modal-body"></div>
+    </div>
+  </div>
+
+  <script src="script.js"></script>
+</body>
+</html>
+
