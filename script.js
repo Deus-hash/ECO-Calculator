@@ -752,7 +752,72 @@
     }
 
     function generateReport(fmt) {
-      const html = buildReportHtml();
+      const data = buildReportHtml();
+      const wl = parseFloat(document.getElementById('wall-length').value) || 0;
+      const wh = parseFloat(document.getElementById('wall-height').value) || 0;
+      const S = parseFloat(document.getElementById('wall-area-s').value) || 0;
+      const GSOP = parseFloat(document.getElementById('gsop').value) || 0;
+      const dc = parseInt(document.getElementById('door-count').value) || 0;
+      const dw = parseFloat(document.getElementById('door-width').value) || 0;
+      const dh = parseFloat(document.getElementById('door-height').value) || 0;
+      const wc = parseInt(document.getElementById('window-count').value) || 0;
+      const ww = parseFloat(document.getElementById('window-width').value) || 0;
+      const wwh = parseFloat(document.getElementById('window-height').value) || 0;
+      const rebarType = document.getElementById('rebar-type').value;
+      const rebarMass = parseFloat(document.getElementById('rebar-mass').value) || 0;
+      const rebarNames = { steel: 'Металлическая кладочная сетка', fiberglass: 'Стеклопластиковая арматура', basalt: 'Базальтопластиковая арматура', carbon: 'Углепластиковая арматура' };
+
+      const html = '<!DOCTYPE html><html lang="ru"><head><meta charset="UTF-8"><title>ECO.Calculator — Отчёт о расчёте</title>' +
+        '<style>body{font-family:Arial,sans-serif;color:#222;margin:30px}' +
+        'h1{font-size:22px;margin:0 0 2px;color:#e8823a;font-weight:700}' +
+        'h2{font-size:16px;margin:24px 0 8px;color:#333}' +
+        '.sub{color:#666;font-size:13px;margin-bottom:24px}' +
+        'table{width:100%;border-collapse:collapse;margin-bottom:16px;font-size:13px}' +
+        'th,td{padding:6px 10px;border:1px solid #ccc;text-align:left}' +
+        'th{background:#f0ece6;font-weight:600}' +
+        '.sec-title{font-size:14px;font-weight:600;margin:20px 0 8px;color:#555}' +
+        '.res-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px;font-size:13px}' +
+        '.res-item{padding:6px 10px;background:#f8f5f1;border-radius:4px}' +
+        '.res-lbl{color:#777;font-size:12px}' +
+        '.res-val{font-weight:600;font-size:15px}' +
+        '.footer{margin-top:32px;font-size:11px;color:#aaa;text-align:center}</style></head><body>' +
+        '<h1>ECO.Calculator — Отчёт о расчёте</h1>' +
+        '<div class="sub">Экология Конструкций Ограждения</div>' +
+
+        '<div class="sec-title">Исходные данные</div>' +
+        '<table><tr><th>Параметр</th><th>Значение</th></tr>' +
+        '<tr><td>Длина стены</td><td>' + wl + ' м</td></tr>' +
+        '<tr><td>Высота стены</td><td>' + wh + ' м</td></tr>' +
+        '<tr><td>Площадь стены (S)</td><td>' + S + ' м²</td></tr>' +
+        '<tr><td>GSOP</td><td>' + GSOP + ' °C·сут</td></tr>' +
+        '<tr><td>Двери (кол-во × ширина × высота)</td><td>' + dc + ' × ' + dw.toFixed(2) + ' × ' + dh.toFixed(2) + ' м</td></tr>' +
+        '<tr><td>Окна (кол-во × ширина × высота)</td><td>' + wc + ' × ' + ww.toFixed(2) + ' × ' + wwh.toFixed(2) + ' м</td></tr>' +
+        '<tr><td>Армирование</td><td>' + (rebarType !== 'none' && rebarMass > 0 ? (rebarNames[rebarType] || 'Арматура') + ' (' + rebarMass + ' кг/м²)' : '—') + '</td></tr>' +
+        '</table>' +
+
+        '<div class="sec-title">Конструкция стены</div>' +
+        '<table><tr><th>#</th><th>Материал</th><th>ρ, кг/м³</th><th>δ, мм</th><th>M, кг</th><th>C, кгCO₂экв</th><th>E, МДж</th></tr>' +
+        data.rows.map(r => '<tr><td>' + (r.n||'') + '</td><td>' + r.name + '</td><td>' + r.rho + '</td><td>' + (parseFloat(r.delta)*1000).toFixed(0) + '</td><td>' + r.M + '</td><td>' + r.C + '</td><td>' + r.E + '</td></tr>').join('') +
+        '<tr style="font-weight:700"><td colspan="4">Итого</td><td>' + data.totalM.toFixed(1) + '</td><td>' + data.totalC.toFixed(2) + '</td><td>' + data.totalE.toFixed(1) + '</td></tr></table>' +
+
+        '<div class="sec-title">Результаты</div>' +
+        '<div class="res-grid">' +
+        [['Масса 1 м²', data.totalM.toFixed(3) + ' кг'],
+         ['Общая масса стен', (data.totalM * data.S / 1000).toFixed(3) + ' т'],
+         ['R₀ усл', data.R0.toFixed(5)],
+         ['Qст.год', data.Qm2.toFixed(4)],
+         ['Qгод общие', (data.Qm2 * data.S).toFixed(3)],
+         ['CO₂ выбросы (на 1 м²)', data.totalC.toFixed(4)],
+         ['CO₂ выбросы общие', (data.totalC * data.S).toFixed(3)],
+         ['Энергия (на 1 м²)', data.totalE.toFixed(3)],
+         ['Энергия общая', (data.totalE * data.S).toFixed(3)],
+         ['Расход газа V₁', data.V1.toFixed(5)],
+         ['Расход газа Vобщ', (data.V1 * data.S).toFixed(3)]]
+        .map(a => '<div class="res-item"><div class="res-lbl">' + a[0] + '</div><div class="res-val">' + a[1] + '</div></div>').join('') +
+        '</div>' +
+        '<div class="footer">IT.BGITU • 2026 • Программа ЭКО</div>' +
+        '</body></html>';
+
       if (fmt === 'pdf') {
         const w = window.open('', '_blank');
         w.document.write(html);
