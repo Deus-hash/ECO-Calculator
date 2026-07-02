@@ -11,12 +11,18 @@
     <header class="header">
       <div class="header-inner">
         <div class="header-left">
-          <div class="brand"><span class="brand-text"><span class="brand-name">ECO.</span><span class="brand-craft">Calculator</span></span><span class="brand-sep">|</span><span class="brand-sub">Программа ЭКО</span></div>
+          <div class="brand"><span class="brand-text"><span class="brand-name">ECO</span><span class="brand-craft">.Calculator</span></span><span class="brand-sep">|</span><span class="brand-sub">Программа ЭКО</span></div>
         </div>
-        <button class="btn-calc" id="btn-calculate">
+        <div class="header-right">
+        <button class="theme-btn" id="theme-btn" title="Сменить тему">
+          <svg class="theme-sun" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="5"/><line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/><line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/></svg>
+          <svg class="theme-moon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>
+        </button>
+          <button class="btn-calc" id="btn-calculate">
           <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="margin-right:6px"><polyline points="9 18 15 12 9 6"/></svg>
           Рассчитать
         </button>
+        </div>
       </div>
     </header>
 
@@ -28,9 +34,10 @@
         </div>
         <h1 class="hero-title">Экология Конструкций Ограждения</h1>
         <p class="hero-sub">Расчет и оценка теплотехнических и экологических параметров<br>наружных стен при проектировании зданий</p>
-        <button class="hero-arrow">
-          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
-        </button>
+        <div class="mode-toggle" id="mode-toggle" title="Переключить режим">
+          <span class="mode-opt active" data-mode="normal">Обычный</span>
+          <span class="mode-opt" data-mode="engineer">Инженерный</span>
+        </div>
       </div>
 
       <div class="grid-2col first-grid">
@@ -108,7 +115,7 @@
       </section>
 
       <section class="card">
-        <div class="card-head"><h2>Результаты расчёта</h2></div>
+        <div class="card-head"><h2>Результаты расчёта</h2><div class="badge">Запас <input type="number" class="badge-input" id="waste" value="5" min="0" max="30">&nbsp;%</div></div>
         <div class="card-body">
           <div class="results-grid">
             <div class="res-group"><div class="res-group-title">Масса</div>
@@ -136,7 +143,7 @@
 
       <section class="card">
         <div class="card-head"><h2>Исходные данные и расчётные показатели на 1 м² стены</h2></div>
-        <div class="card-body" id="detail-container"></div>
+        <div class="card-body"><div id="detail-container"></div><div class="import-bar"><div class="import-fmt-wrap"><button class="import-fmt" id="import-fmt">Выберите формат ▾</button><div class="import-fmt-drop" id="import-fmt-drop"><button class="import-opt" data-fmt="pdf">PDF</button><button class="import-opt" data-fmt="xlsx">Excel</button><button class="import-opt" data-fmt="docx">DOCX</button></div></div><button class="btn-import" id="btn-import" disabled>Импорт</button></div></div>
       </section>
     </main>
 
