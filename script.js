@@ -797,22 +797,22 @@
 
         '<div class="sec-title">Конструкция стены</div>' +
         '<table><tr><th>#</th><th>Материал</th><th>ρ, кг/м³</th><th>δ, мм</th><th>M, кг</th><th>C, кгCO₂экв</th><th>E, МДж</th></tr>' +
-        data.        rows.map(r => '<tr><td>' + (r.n||'') + '</td><td>' + r.name + '</td><td>' + r.rho + '</td><td>' + (document.body.dataset.mode === 'engineer' ? (parseFloat(r.delta)*1000) : (parseFloat(r.delta)*1000).toFixed(0)) + '</td><td>' + r.M + '</td><td>' + r.C + '</td><td>' + r.E + '</td></tr>').join('') +
+        data.        rows.map(r => '<tr><td>' + (r.n||'') + '</td><td>' + r.name + '</td><td>' + r.rho + '</td><td>' + (document.body.dataset.mode === 'engineer' ? (parseFloat(r.delta)*1000).toFixed(6) : (parseFloat(r.delta)*1000).toFixed(0)) + '</td><td>' + r.M + '</td><td>' + r.C + '</td><td>' + r.E + '</td></tr>').join('') +
         '<tr style="font-weight:700"><td colspan="4">Итого</td><td>' + data.totalM.toFixed(1) + '</td><td>' + data.totalC.toFixed(2) + '</td><td>' + data.totalE.toFixed(1) + '</td></tr></table>' +
 
         '<div class="sec-title">Результаты</div>' +
         '<div class="res-grid">' +
-        [['Масса 1 м²', data.totalM.toFixed(3) + ' кг'],
-         ['Общая масса стен', (data.totalM * data.S / 1000).toFixed(3) + ' т'],
-         ['R₀ усл', data.R0.toFixed(5)],
-         ['Qст.год', data.Qm2.toFixed(4)],
-         ['Qгод общие', (data.Qm2 * data.S).toFixed(3)],
-         ['CO₂ выбросы (на 1 м²)', data.totalC.toFixed(4)],
-         ['CO₂ выбросы общие', (data.totalC * data.S).toFixed(3)],
-         ['Энергия (на 1 м²)', data.totalE.toFixed(3)],
-         ['Энергия общая', (data.totalE * data.S).toFixed(3)],
-         ['Расход газа V₁', data.V1.toFixed(5)],
-         ['Расход газа Vобщ', (data.V1 * data.S).toFixed(3)]]
+        [['Масса 1 м²', (document.body.dataset.mode === 'engineer' ? data.totalM.toFixed(6) : data.totalM.toFixed(3)) + ' кг'],
+         ['Общая масса стен', (document.body.dataset.mode === 'engineer' ? (data.totalM * data.S / 1000).toFixed(6) : (data.totalM * data.S / 1000).toFixed(3)) + ' т'],
+         ['R₀ усл', document.body.dataset.mode === 'engineer' ? data.R0.toFixed(6) : data.R0.toFixed(5)],
+         ['Qст.год', document.body.dataset.mode === 'engineer' ? data.Qm2.toFixed(6) : data.Qm2.toFixed(4)],
+         ['Qгод общие', document.body.dataset.mode === 'engineer' ? (data.Qm2 * data.S).toFixed(6) : (data.Qm2 * data.S).toFixed(3)],
+         ['CO₂ выбросы (на 1 м²)', document.body.dataset.mode === 'engineer' ? data.totalC.toFixed(6) : data.totalC.toFixed(4)],
+         ['CO₂ выбросы общие', document.body.dataset.mode === 'engineer' ? (data.totalC * data.S).toFixed(6) : (data.totalC * data.S).toFixed(3)],
+         ['Энергия (на 1 м²)', document.body.dataset.mode === 'engineer' ? data.totalE.toFixed(6) : data.totalE.toFixed(3)],
+         ['Энергия общая', document.body.dataset.mode === 'engineer' ? (data.totalE * data.S).toFixed(6) : (data.totalE * data.S).toFixed(3)],
+         ['Расход газа V₁', document.body.dataset.mode === 'engineer' ? data.V1.toFixed(6) : data.V1.toFixed(5)],
+         ['Расход газа Vобщ', document.body.dataset.mode === 'engineer' ? (data.V1 * data.S).toFixed(6) : (data.V1 * data.S).toFixed(3)]]
         .map(a => '<div class="res-item"><div class="res-lbl">' + a[0] + '</div><div class="res-val">' + a[1] + '</div></div>').join('') +
         '</div>' +
         '<div class="footer">IT.BGITU • 2026 • Программа ЭКО</div>' +

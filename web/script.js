@@ -787,17 +787,17 @@
 
         '<div class="sec-title">Результаты</div>' +
         '<div class="res-grid">' +
-        [['Масса 1 м²', totalM.toFixed(3) + ' кг'],
-         ['Общая масса стен', (totalM * S / 1000).toFixed(3) + ' т'],
-         ['R₀ усл', R0.toFixed(5)],
-         ['Qст.год', Qm2.toFixed(4)],
-         ['Qгод общие', (Qm2 * S).toFixed(3)],
-         ['CO₂ выбросы (на 1 м²)', totalC.toFixed(4)],
-         ['CO₂ выбросы общие', (totalC * S).toFixed(3)],
-         ['Энергия (на 1 м²)', totalE.toFixed(3)],
-         ['Энергия общая', (totalE * S).toFixed(3)],
-         ['Расход газа V₁', V1.toFixed(5)],
-         ['Расход газа Vобщ', (V1 * S).toFixed(3)]]
+        [['Масса 1 м²', (document.body.dataset.mode === 'engineer' ? totalM.toFixed(6) : totalM.toFixed(3)) + ' кг'],
+         ['Общая масса стен', (document.body.dataset.mode === 'engineer' ? (totalM * S / 1000).toFixed(6) : (totalM * S / 1000).toFixed(3)) + ' т'],
+         ['R₀ усл', document.body.dataset.mode === 'engineer' ? R0.toFixed(6) : R0.toFixed(5)],
+         ['Qст.год', document.body.dataset.mode === 'engineer' ? Qm2.toFixed(6) : Qm2.toFixed(4)],
+         ['Qгод общие', document.body.dataset.mode === 'engineer' ? (Qm2 * S).toFixed(6) : (Qm2 * S).toFixed(3)],
+         ['CO₂ выбросы (на 1 м²)', document.body.dataset.mode === 'engineer' ? totalC.toFixed(6) : totalC.toFixed(4)],
+         ['CO₂ выбросы общие', document.body.dataset.mode === 'engineer' ? (totalC * S).toFixed(6) : (totalC * S).toFixed(3)],
+         ['Энергия (на 1 м²)', document.body.dataset.mode === 'engineer' ? totalE.toFixed(6) : totalE.toFixed(3)],
+         ['Энергия общая', document.body.dataset.mode === 'engineer' ? (totalE * S).toFixed(6) : (totalE * S).toFixed(3)],
+         ['Расход газа V₁', document.body.dataset.mode === 'engineer' ? V1.toFixed(6) : V1.toFixed(5)],
+         ['Расход газа Vобщ', document.body.dataset.mode === 'engineer' ? (V1 * S).toFixed(6) : (V1 * S).toFixed(3)]]
         .map(a => '<div class="res-item"><div class="res-lbl">' + a[0] + '</div><div class="res-val">' + a[1] + '</div></div>').join('') +
         '</div>' +
         '<div class="footer">IT.BGITU • 2026 • Программа ЭКО</div>' +
