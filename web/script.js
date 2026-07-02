@@ -753,7 +753,7 @@
       const V1 = Qm2 > 0 ? Qm2 / (9.3 * 0.9) : 0;
 
       const html = '<!DOCTYPE html><html lang="ru"><head><meta charset="UTF-8"><title>ECO.Calculator — Отчёт о расчёте</title>' +
-        '<style>body{font-family:Arial,sans-serif;color:#222;margin:30px}' +
+        '<style>*{color:#000!important}h1{color:#e8823a!important}body{font-family:Arial,sans-serif;margin:30px}' +
         'h1{font-size:22px;margin:0 0 2px;color:#e8823a;font-weight:700}' +
         'h2{font-size:16px;margin:24px 0 8px;color:#333}' +
         '.sub{color:#666;font-size:13px;margin-bottom:24px}' +
@@ -806,7 +806,7 @@
       if (fmt === 'pdf') {
         const el = document.createElement('div');
         el.style.width = '800px'; el.style.padding = '30px'; el.style.background = '#fff';
-        el.style.position = 'fixed'; el.style.top = '0'; el.style.left = '0'; el.style.zIndex = '9999';
+        el.style.position = 'absolute'; el.style.left = '-9999px'; el.style.top = '0';
         el.innerHTML = html;
         document.body.appendChild(el);
         setTimeout(() => {
