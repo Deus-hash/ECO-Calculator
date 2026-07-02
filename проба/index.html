@@ -11,7 +11,7 @@
     <header class="header">
       <div class="header-inner">
         <div class="header-left">
-          <div class="brand"><span class="brand-text"><span class="brand-name">ECO</span><span class="brand-craft">.Calculator</span></span><span class="brand-sep">|</span><span class="brand-sub">Программа ЭКО</span></div>
+          <div class="brand"><span class="brand-text"><span class="brand-name">ECO</span><span class="brand-craft">.Craft</span></span><span class="brand-sep">|</span><span class="brand-sub">Программа ЭКО</span></div>
         </div>
         <div class="header-right">
         <button class="theme-btn" id="theme-btn" title="Сменить тему">
@@ -45,8 +45,8 @@
           <div class="card-head"><h2>Габариты стены</h2></div>
           <div class="card-body">
             <div class="field-row">
-               <div class="field"><label>Длина (м)</label><input type="number" class="input" id="wall-length" placeholder="0" step="0.1"></div>
-              <div class="field"><label>Высота (м)</label><input type="number" class="input" id="wall-height" placeholder="0" step="0.1"></div>
+              <div class="field"><label>Длина (м)</label><input type="number" class="input" id="wall-length" value="6" step="0.1"></div>
+              <div class="field"><label>Высота (м)</label><input type="number" class="input" id="wall-height" value="3" step="0.1"></div>
             </div>
           </div>
         </section>
@@ -55,8 +55,8 @@
           <div class="card-head"><h2>Параметры региона</h2></div>
           <div class="card-body">
             <div class="field-row">
-               <div class="field"><label>ГСОП (градусо-сутки)</label><input type="number" class="input" id="gsop" placeholder="0" step="1"></div>
-              <div class="field"><label>Площадь стен S (м²)</label><input type="number" class="input" id="wall-area-s" placeholder="0" step="1"></div>
+              <div class="field"><label>ГСОП (градусо-сутки)</label><input type="number" class="input" id="gsop" value="4378" step="1"></div>
+              <div class="field"><label>Площадь стен S (м²)</label><input type="number" class="input" id="wall-area-s" value="620" step="1"></div>
             </div>
           </div>
         </section>
@@ -67,14 +67,14 @@
           <div class="card-head"><h2>Проемы</h2></div>
           <div class="card-body">
             <div class="field-row">
-              <div class="field"><label>Двери</label><input type="number" class="input" id="door-count" value="0" min="0"></div>
-              <div class="field"><label>Ширина (м)</label><input type="number" class="input" id="door-width" placeholder="0" step="0.05"></div>
-              <div class="field"><label>Высота (м)</label><input type="number" class="input" id="door-height" placeholder="0" step="0.05"></div>
+              <div class="field"><label>Двери</label><input type="number" class="input" id="door-count" value="1" min="0"></div>
+              <div class="field"><label>Ширина (м)</label><input type="number" class="input" id="door-width" value="0.9" step="0.05"></div>
+              <div class="field"><label>Высота (м)</label><input type="number" class="input" id="door-height" value="2.1" step="0.05"></div>
             </div>
             <div class="field-row">
-              <div class="field"><label>Окна</label><input type="number" class="input" id="window-count" value="0" min="0"></div>
-              <div class="field"><label>Ширина (м)</label><input type="number" class="input" id="window-width" placeholder="0" step="0.05"></div>
-              <div class="field"><label>Высота (м)</label><input type="number" class="input" id="window-height" placeholder="0" step="0.05"></div>
+              <div class="field"><label>Окна</label><input type="number" class="input" id="window-count" value="1" min="0"></div>
+              <div class="field"><label>Ширина (м)</label><input type="number" class="input" id="window-width" value="1.4" step="0.05"></div>
+              <div class="field"><label>Высота (м)</label><input type="number" class="input" id="window-height" value="1.4" step="0.05"></div>
             </div>
           </div>
         </section>
@@ -94,7 +94,7 @@
               </div>
             </div>
             <div class="field-row">
-              <div class="field"><label>Масса на 1 м² (кг)</label><input type="number" class="input" id="rebar-mass" placeholder="0" min="0" step="0.1"></div>
+              <div class="field"><label>Масса на 1 м² (кг)</label><input type="number" class="input" id="rebar-mass" value="1.5" min="0" step="0.1"></div>
             </div>
           </div>
         </section>
@@ -115,7 +115,7 @@
       </section>
 
       <section class="card">
-        <div class="card-head"><h2>Результаты расчёта</h2></div>
+        <div class="card-head"><h2>Результаты расчёта</h2><div class="badge">Запас <input type="number" class="badge-input" id="waste" value="5" min="0" max="30">&nbsp;%</div></div>
         <div class="card-body">
           <div class="results-grid">
             <div class="res-group"><div class="res-group-title">Масса</div>
@@ -143,7 +143,7 @@
 
       <section class="card">
         <div class="card-head"><h2>Исходные данные и расчётные показатели на 1 м² стены</h2></div>
-        <div class="card-body"><div id="detail-container"></div><div class="import-bar"><div class="import-fmt-wrap"><button class="import-fmt" id="import-fmt">Выберите формат ▾</button><div class="import-fmt-drop" id="import-fmt-drop"><button class="import-opt" data-fmt="pdf">PDF</button><button class="import-opt" data-fmt="xlsx">Excel</button><button class="import-opt" data-fmt="docx">DOCX</button></div></div><button class="btn-import" id="btn-import" disabled>Экспорт</button></div></div>
+        <div class="card-body"><div id="detail-container"></div><div class="import-bar"><div class="import-fmt-wrap"><button class="import-fmt" id="import-fmt">Выберите формат ▾</button><div class="import-fmt-drop" id="import-fmt-drop"><button class="import-opt" data-fmt="pdf">PDF</button><button class="import-opt" data-fmt="xlsx">Excel</button><button class="import-opt" data-fmt="docx">DOCX</button></div></div><button class="btn-import" id="btn-import" disabled>Импорт</button></div></div>
       </section>
     </main>
 
@@ -165,7 +165,6 @@
     </div>
   </div>
 
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
   <script src="script.js"></script>
 </body>
 </html>

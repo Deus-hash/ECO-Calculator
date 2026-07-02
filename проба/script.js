@@ -29,7 +29,6 @@
       {id:'mw160',name:'Минвата каменная',rho:160,lam:0.047,F:1.35,e:29.6,color:'#b8a888',tex:'tex-insulation'},
       {id:'mw140',name:'Минвата каменная',rho:140,lam:0.046,F:1.31,e:27.4,color:'#bcac8c',tex:'tex-insulation'},
       {id:'mw120',name:'Минвата каменная',rho:120,lam:0.046,F:1.29,e:26.4,color:'#c0b090',tex:'tex-insulation'},
-      {id:'mw100',name:'Минвата каменная ρ=100',rho:100,lam:0.044,F:1.26,e:24.5,color:'#c4b494',tex:'tex-insulation'},
       {id:'mw80',name:'Минвата каменная ρ=80',rho:80,lam:0.045,F:1.26,e:24.5,color:'#c8b898',tex:'tex-insulation'},
       {id:'mw60',name:'Минвата каменная ρ=60',rho:60,lam:0.044,F:1.22,e:21.5,color:'#ccbc9c',tex:'tex-insulation'},
       {id:'mw50',name:'Минвата каменная ρ=50',rho:50,lam:0.043,F:1.19,e:19.2,color:'#d0c0a0',tex:'tex-insulation'},
@@ -148,7 +147,7 @@
       {id:'cer-brick1600',name:'Кирпич керамический пустотный ρ=1600',rho:1600,lam:0.64,F:0.35,e:3.25,color:'#b87048',tex:'tex-brick'},
       {id:'cer-brick1400',name:'Кирпич керамический пустотный ρ=1400',rho:1400,lam:0.58,F:0.28,e:3.15,color:'#ba784e',tex:'tex-brick'},
       {id:'cer-brick1200',name:'Кирпич керамический пустотный ρ=1200',rho:1200,lam:0.52,F:0.21,e:2.828,color:'#bc8054',tex:'tex-brick'},
-      {id:'sil-brick1800',name:'Кирпич силикатный на ЦПР ρ=1800',rho:1800,lam:1.05,F:0.144,e:1.621,color:'#c8c0b0',tex:'tex-brick'},
+      {id:'sil-brick1800',name:'Кирпич силикатный на ЦПР ρ=1800',rho:1800,lam:1.05,F:0.138,e:1.565,color:'#c8c0b0',tex:'tex-brick'},
       {id:'sil-brick1960',name:'Кирпич силикатный на ЦПР ρ=1960',rho:1960,lam:1.48,F:0.144,e:1.585,color:'#c4bcac',tex:'tex-brick'},
       {id:'sil-brick1500',name:'Кирпич силикатный пустотный ρ=1500',rho:1500,lam:0.81,F:0.134,e:1.521,color:'#ccc4b4',tex:'tex-brick'},
       {id:'sil-brick1400',name:'Кирпич силикатный 14-пустотный ρ=1400',rho:1400,lam:0.76,F:0.13,e:1.51,color:'#d0c8b8',tex:'tex-brick'},
@@ -160,7 +159,7 @@
       {id:'lvl',name:'Клееный брус LVL',rho:600,lam:0.1,F:2.28,e:34.3,color:'#8a6a4a',tex:'tex-wood'},
       {id:'tile2000',name:'Облицовка керамической плиткой',rho:2000,lam:1.4,F:1.4,e:15.4,color:'#c0b0a0',tex:'tex-concrete'},
       {id:'wallpaper',name:'Обои',rho:450,lam:0.045,F:1.93,e:36.4,color:'#d0c8b8',tex:'tex-sand'},
-      {id:'rebar-steel',name:'Сталь стержневая арматурная',rho:7850,lam:58,F:2.3,e:24.5,color:'#7a7a80',tex:'tex-concrete'},
+      {id:'rebar-steel',name:'Сталь стержневая арматурная',rho:7850,lam:58,F:2.4,e:24.2,color:'#7a7a80',tex:'tex-concrete'},
       {id:'mesh-steel',name:'Сварная сетка',rho:7850,lam:58,F:2.1,e:23.8,color:'#7a7a80',tex:'tex-concrete'},
       {id:'zinc-steel',name:'Оцинкованные изделия',rho:7850,lam:58,F:2.28,e:29.1,color:'#8a8a90',tex:'tex-concrete'},
       {id:'stainless',name:'Нержавеющая сталь',rho:7850,lam:16,F:6.15,e:56.7,color:'#8a8a90',tex:'tex-concrete'},
@@ -179,7 +178,11 @@
 
     const COLORS = ['#b85a3a','#c8c0b0','#b0a898','#8a8a7a','#7a5a3a','#d4c8a0','#b87048','#c0b8b0','#a0a098','#6a4a2a','#b0b0a8','#7a7a80'];
 
-    let layers = [];
+    let layers = [
+      { materialId: 'sil-brick1800', thickness: 250, density: null },
+      { materialId: 'mw80', thickness: 100, density: null },
+      { materialId: 'cer-brick1400', thickness: 120, density: null },
+    ];
     let selectedIdx = -1;
     let pickTargetIdx = -1;
 
@@ -603,7 +606,6 @@
     }
 
     function calc() {
-      try {
       renderWall();
       const wl = parseFloat(document.getElementById('wall-length').value) || 0;
       const wh = parseFloat(document.getElementById('wall-height').value) || 0;
@@ -613,15 +615,11 @@
       const wc = parseInt(document.getElementById('window-count').value) || 0;
       const ww = parseFloat(document.getElementById('window-width').value) || 0;
       const wwh = parseFloat(document.getElementById('window-height').value) || 0;
-      const wasteEl = document.getElementById('waste');
-      const waste = wasteEl ? (parseFloat(wasteEl.value) || 0) : 5;
+      const waste = parseFloat(document.getElementById('waste').value) || 0;
       const GSOP = parseFloat(document.getElementById('gsop').value) || 0;
       const S = parseFloat(document.getElementById('wall-area-s').value) || 0;
       const rebarType = document.getElementById('rebar-type').value;
       const rebarMass = parseFloat(document.getElementById('rebar-mass').value) || 0;
-
-      const isEngineer = document.body.dataset.mode === 'engineer';
-      const fmt = isEngineer ? (v, d) => v : (v, d) => parseFloat(v.toFixed(d));
 
       renderDetailTable(layers, rebarType, rebarMass);
 
@@ -629,6 +627,7 @@
       const totalWallArea = netArea > 0 ? S : 0;
 
       let Mtotal = 0, Rsum = 0, Ctotal = 0, Etotal = 0;
+      let hasBlock = false, blockMat = null, matQty = 0;
 
       layers.forEach(layer => {
         const m = getMat(layer.materialId);
@@ -640,6 +639,15 @@
         Rsum += delta / m.lam;
         Ctotal += M * m.F;
         Etotal += M * m.e;
+
+        if (m.lam < 0.2 && m.rho < 200) return;
+        if (m.id.includes('brick') || m.id.includes('block') || m.id.includes('sil') || m.id.includes('cer')) {
+          hasBlock = true;
+          if (!blockMat) blockMat = m;
+          const aJoint = ((0.25 + 0.01) / 1) * ((0.065 + 0.01) / 1);
+          const cnt = aJoint > 0 ? Math.ceil(netArea / aJoint) : 0;
+          matQty += cnt;
+        }
       });
 
       if (rebarType !== 'none' && rebarMass > 0) {
@@ -662,18 +670,17 @@
       const V1 = Qm2 > 0 ? Qm2 / (H * eff) : 0;
       const Vtotal = V1 * totalWallArea;
 
-      document.getElementById('res-mass').textContent = fmt(Mtotal, 1) + ' кг';
-      document.getElementById('res-mass-total').textContent = fmt(Mtotal * totalWallArea / 1000, 1) + ' т';
-      document.getElementById('res-r0').textContent = fmt(R0, isEngineer ? 6 : 3);
-      document.getElementById('res-q').textContent = fmt(Qm2, 2);
-      document.getElementById('res-q-total').textContent = fmt(Qtotal, 1);
-      document.getElementById('res-co2').textContent = fmt(Ctotal, 2);
-      document.getElementById('res-co2-total').textContent = fmt(Ctotal * totalWallArea, 1);
-      document.getElementById('res-energy').textContent = fmt(Etotal, 1);
-      document.getElementById('res-energy-total').textContent = fmt(Etotal * totalWallArea, 1);
-      document.getElementById('res-gas').textContent = fmt(V1, isEngineer ? 6 : 3);
-      document.getElementById('res-gas-total').textContent = fmt(Vtotal, 1);
-    } catch(e) { console.error('calc error:', e); }
+      document.getElementById('res-mass').textContent = Mtotal.toFixed(1) + ' кг';
+      document.getElementById('res-mass-total').textContent = (Mtotal * totalWallArea / 1000).toFixed(1) + ' т';
+      document.getElementById('res-r0').textContent = R0.toFixed(3);
+      document.getElementById('res-q').textContent = Qm2.toFixed(2);
+      document.getElementById('res-q-total').textContent = Qtotal.toFixed(1);
+      document.getElementById('res-co2').textContent = Ctotal.toFixed(2);
+      document.getElementById('res-co2-total').textContent = (Ctotal * totalWallArea).toFixed(1);
+      document.getElementById('res-energy').textContent = Etotal.toFixed(1);
+      document.getElementById('res-energy-total').textContent = (Etotal * totalWallArea).toFixed(1);
+      document.getElementById('res-gas').textContent = V1.toFixed(3);
+      document.getElementById('res-gas-total').textContent = Vtotal.toFixed(1);
     }
 
     document.querySelectorAll('input, select').forEach(el => el.addEventListener('input', calc));
@@ -711,119 +718,12 @@
       });
     });
     document.addEventListener('click', () => fmtDrop.classList.remove('open'));
-    function generateReport(fmt) {
-      const wl = parseFloat(document.getElementById('wall-length').value) || 0;
-      const wh = parseFloat(document.getElementById('wall-height').value) || 0;
-      const GSOP = parseFloat(document.getElementById('gsop').value) || 0;
-      const S = parseFloat(document.getElementById('wall-area-s').value) || 0;
-      const dc = parseInt(document.getElementById('door-count').value) || 0;
-      const dw = parseFloat(document.getElementById('door-width').value) || 0;
-      const dh = parseFloat(document.getElementById('door-height').value) || 0;
-      const wc = parseInt(document.getElementById('window-count').value) || 0;
-      const ww = parseFloat(document.getElementById('window-width').value) || 0;
-      const wwh = parseFloat(document.getElementById('window-height').value) || 0;
-      const rebarType = document.getElementById('rebar-type').value;
-      const rebarMass = parseFloat(document.getElementById('rebar-mass').value) || 0;
-      const rebarNames = { steel: 'Металлическая кладочная сетка', fiberglass: 'Стеклопластиковая арматура', basalt: 'Базальтопластиковая арматура', carbon: 'Углепластиковая арматура' };
-
-      let rows = layers.map((l, i) => {
-        const m = getMat(l.materialId);
-        if (!m) return null;
-        const rho = l.density !== null ? l.density : m.rho;
-        const delta = l.thickness / 1000;
-        const M = rho * delta;
-        return { n: i + 1, name: m.name, rho, delta: delta.toFixed(3), M: M.toFixed(1), C: (M * m.F).toFixed(2), E: (M * m.e).toFixed(1) };
-      }).filter(Boolean);
-
-      let totalM = 0, totalC = 0, totalE = 0;
-      rows.forEach(r => { totalM += parseFloat(r.M); totalC += parseFloat(r.C); totalE += parseFloat(r.E); });
-
-      if (rebarType !== 'none' && rebarMass > 0) {
-        let rb = DB.find(d => d.id === 'rebar-steel');
-        if (rebarType === 'fiberglass' || rebarType === 'basalt') rb = DB.find(d => d.id === 'basalt-rebar');
-        else if (rebarType === 'carbon') rb = DB.find(d => d.id === 'carbon-rebar');
-        if (rb) {
-          rows.push({ n: '', name: rebarNames[rebarType] || 'Арматура', rho: '', delta: '', M: rebarMass.toFixed(1), C: (rebarMass * rb.F).toFixed(2), E: (rebarMass * rb.e).toFixed(1) });
-          totalM += rebarMass; totalC += rebarMass * rb.F; totalE += rebarMass * rb.e;
-        }
-      }
-
-      const R0 = 0.15841 + rows.reduce((s, r) => s + (parseFloat(r.delta) || 0) / (getMat(layers[rows.indexOf(r)]?.materialId)?.lam || 1), 0);
-      const Qm2 = GSOP > 0 && R0 > 0 ? (0.024 * GSOP * 1) / R0 : 0;
-      const V1 = Qm2 > 0 ? Qm2 / (9.3 * 0.9) : 0;
-
-      const html = '<!DOCTYPE html><html lang="ru"><head><meta charset="UTF-8"><title>ECO.Calculator — Отчёт о расчёте</title>' +
-        '<style>body{font-family:Arial,sans-serif;color:#222;margin:30px}' +
-        'h1{font-size:22px;margin:0 0 2px;color:#e8823a;font-weight:700}' +
-        'h2{font-size:16px;margin:24px 0 8px;color:#333}' +
-        '.sub{color:#666;font-size:13px;margin-bottom:24px}' +
-        'table{width:100%;border-collapse:collapse;margin-bottom:16px;font-size:13px}' +
-        'th,td{padding:6px 10px;border:1px solid #ccc;text-align:left}' +
-        'th{background:#f0ece6;font-weight:600}' +
-        '.sec-title{font-size:14px;font-weight:600;margin:20px 0 8px;color:#555}' +
-        '.res-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px;font-size:13px}' +
-        '.res-item{padding:6px 10px;background:#f8f5f1;border-radius:4px}' +
-        '.res-lbl{color:#777;font-size:12px}' +
-        '.res-val{font-weight:600;font-size:15px}' +
-        '.footer{margin-top:32px;font-size:11px;color:#aaa;text-align:center}</style></head><body>' +
-        '<h1>ECO.Calculator — Отчёт о расчёте</h1>' +
-        '<div class="sub">Экология Конструкций Ограждения</div>' +
-
-        '<div class="sec-title">Исходные данные</div>' +
-        '<table><tr><th>Параметр</th><th>Значение</th></tr>' +
-        '<tr><td>Длина стены</td><td>' + wl + ' м</td></tr>' +
-        '<tr><td>Высота стены</td><td>' + wh + ' м</td></tr>' +
-        '<tr><td>Площадь стены (S)</td><td>' + S + ' м²</td></tr>' +
-        '<tr><td>GSOP</td><td>' + GSOP + ' °C·сут</td></tr>' +
-        '<tr><td>Двери (кол-во × ширина × высота)</td><td>' + dc + ' × ' + dw.toFixed(2) + ' × ' + dh.toFixed(2) + ' м</td></tr>' +
-        '<tr><td>Окна (кол-во × ширина × высота)</td><td>' + wc + ' × ' + ww.toFixed(2) + ' × ' + wwh.toFixed(2) + ' м</td></tr>' +
-        '<tr><td>Армирование</td><td>' + (rebarType !== 'none' && rebarMass > 0 ? (rebarNames[rebarType] || 'Арматура') + ' (' + rebarMass + ' кг/м²)' : '—') + '</td></tr>' +
-        '</table>' +
-
-        '<div class="sec-title">Конструкция стены</div>' +
-        '<table><tr><th>#</th><th>Материал</th><th>ρ, кг/м³</th><th>δ, мм</th><th>M, кг</th><th>C, кгCO₂экв</th><th>E, МДж</th></tr>' +
-        rows.map(r => '<tr><td>' + (r.n||'') + '</td><td>' + r.name + '</td><td>' + r.rho + '</td><td>' + (parseFloat(r.delta)*1000).toFixed(0) + '</td><td>' + r.M + '</td><td>' + r.C + '</td><td>' + r.E + '</td></tr>').join('') +
-        '<tr style="font-weight:700"><td colspan="4">Итого</td><td>' + totalM.toFixed(1) + '</td><td>' + totalC.toFixed(2) + '</td><td>' + totalE.toFixed(1) + '</td></tr></table>' +
-
-        '<div class="sec-title">Результаты</div>' +
-        '<div class="res-grid">' +
-        [['Масса 1 м²', totalM.toFixed(3) + ' кг'],
-         ['Общая масса стен', (totalM * S / 1000).toFixed(3) + ' т'],
-         ['R₀ усл', R0.toFixed(5)],
-         ['Qст.год', Qm2.toFixed(4)],
-         ['Qгод общие', (Qm2 * S).toFixed(3)],
-         ['CO₂ выбросы (на 1 м²)', totalC.toFixed(4)],
-         ['CO₂ выбросы общие', (totalC * S).toFixed(3)],
-         ['Энергия (на 1 м²)', totalE.toFixed(3)],
-         ['Энергия общая', (totalE * S).toFixed(3)],
-         ['Расход газа V₁', V1.toFixed(5)],
-         ['Расход газа Vобщ', (V1 * S).toFixed(3)]]
-        .map(a => '<div class="res-item"><div class="res-lbl">' + a[0] + '</div><div class="res-val">' + a[1] + '</div></div>').join('') +
-        '</div>' +
-        '<div class="footer">IT.BGITU • 2026 • Программа ЭКО</div>' +
-        '</body></html>';
-
-      if (fmt === 'pdf') {
-        const el = document.createElement('div');
-        el.style.position = 'absolute'; el.style.left = '-9999px';
-        el.innerHTML = html;
-        document.body.appendChild(el);
-        html2pdf().set({ margin: 10, filename: 'eco-calculator-report.pdf', html2canvas: { scale: 2 }, jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' } }).from(el).save().then(() => { document.body.removeChild(el); });
-      } else {
-        const mime = fmt === 'xlsx' ? 'application/vnd.ms-excel' : 'application/msword';
-        const ext = fmt === 'xlsx' ? 'xls' : 'doc';
-        const blob = new Blob([html], { type: mime });
-        const url = URL.createObjectURL(blob);
-        const a = document.createElement('a');
-        a.href = url;
-        a.download = 'eco-calculator-report.' + ext;
-        a.click();
-        URL.revokeObjectURL(url);
-      }
-    }
-
     importBtn.addEventListener('click', () => {
       if (!selectedFormat) return;
-      generateReport(selectedFormat);
+      const accept = { pdf: '.pdf', xlsx: '.xlsx,.xls', docx: '.docx,.doc' };
+      const input = document.createElement('input');
+      input.type = 'file';
+      input.accept = accept[selectedFormat] || '*/*';
+      input.click();
     });
   

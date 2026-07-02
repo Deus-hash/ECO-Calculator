@@ -819,10 +819,11 @@
         '</body></html>';
 
       if (fmt === 'pdf') {
-        const w = window.open('', '_blank');
-        w.document.write(html);
-        w.document.close();
-        w.print();
+        const el = document.createElement('div');
+        el.style.position = 'absolute'; el.style.left = '-9999px';
+        el.innerHTML = html;
+        document.body.appendChild(el);
+        html2pdf().set({ margin: 10, filename: 'eco-calculator-report.pdf', html2canvas: { scale: 2 }, jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' } }).from(el).save().then(() => { document.body.removeChild(el); });
       } else {
         const mime = fmt === 'xlsx' ? 'application/vnd.ms-excel' : 'application/msword';
         const ext = fmt === 'xlsx' ? 'xls' : 'doc';
