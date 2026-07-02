@@ -752,39 +752,22 @@
     }
 
     function generateReport(fmt) {
-      const data = buildReportHtml();
+      const html = buildReportHtml();
       if (fmt === 'pdf') {
-        const el = document.createElement('div');
-        el.style.position = 'absolute'; el.style.left = '-9999px';
-        el.innerHTML = data.html;
-        document.body.appendChild(el);
-        html2pdf().set({ margin: 10, filename: 'eco-report.pdf', html2canvas: { scale: 2 }, jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' } }).from(el).save().then(() => { document.body.removeChild(el); });
-      } else if (fmt === 'xlsx') {
-        const wsData = [['№', 'Материал', 'ρ, кг/м³', 'δ, м', 'M, кг', 'C, кгCO₂экв', 'E, МДж']];
-        data.rows.forEach(r => wsData.push([r.n, r.name, r.rho, r.delta, r.M, r.C, r.E]));
-        wsData.push(['', '', '', 'Итого', data.totalM.toFixed(1), data.totalC.toFixed(2), data.totalE.toFixed(1)]);
-        const ws = XLSX.utils.aoa_to_sheet(wsData);
-        const wb = XLSX.utils.book_new();
-        XLSX.utils.book_append_sheet(wb, ws, 'Отчёт');
-        XLSX.writeFile(wb, 'eco-report.xlsx');
-      } else if (fmt === 'docx') {
-        const { Document, Packer, Paragraph, Table, TableRow, TableCell, TextRun, WidthType, AlignmentType, HeadingLevel, BorderStyle } = window.docx || {};
-        if (!Document) { alert('Библиотека docx не загружена. Скачайте отчёт как PDF/XLSX.'); return; }
-        const rows = data.rows;
-        const headerRow = new TableRow({ children: ['№','Материал','ρ, кг/м³','δ, м','M, кг','C, кгCO₂экв','E, МДж'].map(h => new TableCell({ children: [new Paragraph({ children: [new TextRun({ text: h, bold: true, size: 20 })] })] })) });
-        const dataRows = rows.map(r => new TableRow({ children: [r.n, r.name, r.rho, r.delta, r.M, r.C, r.E].map(v => new TableCell({ children: [new Paragraph({ children: [new TextRun({ text: String(v||''), size: 18 })] })] })) }));
-        const totalRow = new TableRow({ children: ['','','','Итого', data.totalM.toFixed(1), data.totalC.toFixed(2), data.totalE.toFixed(1)].map(v => new TableCell({ children: [new Paragraph({ children: [new TextRun({ text: String(v), size: 18, bold: true })] })] })) });
-        const doc = new Document({ sections: [{ children: [
-          new Paragraph({ children: [new TextRun({ text: 'ЭКО — Экология Конструкций Ограждения', size: 28, color: 'E8823A', bold: true })], heading: HeadingLevel.HEADING_1 }),
-          new Paragraph({ children: [new TextRun({ text: 'Отчёт о расчёте теплотехнических и экологических параметров наружных стен', size: 20, color: '555555' })] }),
-          new Table({ rows: [headerRow, ...dataRows, totalRow], width: { size: 100, type: WidthType.PERCENTAGE } }),
-          ...['Масса 1 м² стены', 'R₀ усл (м²·°С/Вт)', 'CO₂ выбросы (кгCO₂экв/м²)', 'Воплощённая энергия (МДж/м²)', 'Газ V₁ (м³/год·м²)', 'Газ Vобщ (м³/год)'].map((t,i) => new Paragraph({ children: [new TextRun({ text: t + ': ', bold: true, size: 20 }), new TextRun({ text: [data.totalM.toFixed(1)+' кг', data.R0.toFixed(4), data.totalC.toFixed(2), data.totalE.toFixed(1), data.V1.toFixed(3), (data.V1*data.S).toFixed(1)][i], size: 20 })] }))
-        ]}] });
-        Packer.toBlob(doc).then(blob => {
-          const url = URL.createObjectURL(blob);
-          const a = document.createElement('a'); a.href = url; a.download = 'eco-report.docx'; a.click();
-          URL.revokeObjectURL(url);
-        });
+        const w = window.open('', '_blank');
+        w.document.write(html);
+        w.document.close();
+        w.print();
+      } else {
+        const mime = fmt === 'xlsx' ? 'application/vnd.ms-excel' : 'application/msword';
+        const ext = fmt === 'xlsx' ? 'xls' : 'doc';
+        const blob = new Blob([html], { type: mime });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = 'eco-calculator-report.' + ext;
+        a.click();
+        URL.revokeObjectURL(url);
       }
     }
 
