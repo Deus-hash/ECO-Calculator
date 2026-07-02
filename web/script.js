@@ -782,7 +782,7 @@
 
         '<div class="sec-title">Конструкция стены</div>' +
         '<table><tr><th>#</th><th>Материал</th><th>ρ, кг/м³</th><th>δ, мм</th><th>M, кг</th><th>C, кгCO₂экв</th><th>E, МДж</th></tr>' +
-        rows.map(r => '<tr><td>' + (r.n||'') + '</td><td>' + r.name + '</td><td>' + r.rho + '</td><td>' + (parseFloat(r.delta)*1000).toFixed(0) + '</td><td>' + r.M + '</td><td>' + r.C + '</td><td>' + r.E + '</td></tr>').join('') +
+        rows.map(r => '<tr><td>' + (r.n||'') + '</td><td>' + r.name + '</td><td>' + r.rho + '</td><td>' + (document.body.dataset.mode === 'engineer' ? (parseFloat(r.delta)*1000) : (parseFloat(r.delta)*1000).toFixed(0)) + '</td><td>' + r.M + '</td><td>' + r.C + '</td><td>' + r.E + '</td></tr>').join('') +
         '<tr style="font-weight:700"><td colspan="4">Итого</td><td>' + totalM.toFixed(1) + '</td><td>' + totalC.toFixed(2) + '</td><td>' + totalE.toFixed(1) + '</td></tr></table>' +
 
         '<div class="sec-title">Результаты</div>' +
