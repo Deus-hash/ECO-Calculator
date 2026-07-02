@@ -819,10 +819,14 @@
         '</body></html>';
 
       if (fmt === 'pdf') {
-        const w = window.open('', '_blank');
-        w.document.write('<p style="font-family:Arial;text-align:center;color:#888;margin-top:20px">Нажмите Ctrl+S → выберите "Сохранить как PDF"</p>');
-        w.document.write(html);
-        w.document.close();
+        const el = document.createElement('div');
+        el.style.width = '800px'; el.style.padding = '20px'; el.style.background = '#fff';
+        el.style.position = 'fixed'; el.style.top = '0'; el.style.left = '0'; el.style.zIndex = '9999';
+        el.innerHTML = html;
+        document.body.appendChild(el);
+        setTimeout(() => {
+          html2pdf().set({ margin: 10, filename: 'eco-calculator-report.pdf', html2canvas: { scale: 2, width: 800, height: el.scrollHeight }, jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' } }).from(el).save().then(() => { document.body.removeChild(el); });
+        }, 1000);
       } else {
         const mime = fmt === 'xlsx' ? 'application/vnd.ms-excel' : 'application/msword';
         const ext = fmt === 'xlsx' ? 'xls' : 'doc';
