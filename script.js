@@ -179,11 +179,7 @@
 
     const COLORS = ['#b85a3a','#c8c0b0','#b0a898','#8a8a7a','#7a5a3a','#d4c8a0','#b87048','#c0b8b0','#a0a098','#6a4a2a','#b0b0a8','#7a7a80'];
 
-    let layers = [
-      { materialId: 'sil-brick1800', thickness: 250, density: null },
-      { materialId: 'mw100', thickness: 100, density: null },
-      { materialId: 'cer-brick1400', thickness: 120, density: null },
-    ];
+    let layers = [];
     let selectedIdx = -1;
     let pickTargetIdx = -1;
 
