@@ -715,7 +715,7 @@
       });
     });
     document.addEventListener('click', () => fmtDrop.classList.remove('open'));
-    function generateReport(fmt) {
+    function buildReportHtml() {
       const wl = parseFloat(document.getElementById('wall-length').value) || 0;
       const wh = parseFloat(document.getElementById('wall-height').value) || 0;
       const GSOP = parseFloat(document.getElementById('gsop').value) || 0;
@@ -723,7 +723,6 @@
       const rebarType = document.getElementById('rebar-type').value;
       const rebarMass = parseFloat(document.getElementById('rebar-mass').value) || 0;
       const rebarNames = { steel: 'Металлическая кладочная сетка', fiberglass: 'Стеклопластиковая арматура', basalt: 'Базальтопластиковая арматура', carbon: 'Углепластиковая арматура' };
-
       let rows = layers.map((l, i) => {
         const m = getMat(l.materialId);
         if (!m) return null;
@@ -732,10 +731,8 @@
         const M = rho * delta;
         return { n: i + 1, name: m.name, rho, delta: delta.toFixed(3), M: M.toFixed(1), C: (M * m.F).toFixed(2), E: (M * m.e).toFixed(1) };
       }).filter(Boolean);
-
       let totalM = 0, totalC = 0, totalE = 0;
       rows.forEach(r => { totalM += parseFloat(r.M); totalC += parseFloat(r.C); totalE += parseFloat(r.E); });
-
       if (rebarType !== 'none' && rebarMass > 0) {
         let rb = DB.find(d => d.id === 'rebar-steel');
         if (rebarType === 'fiberglass' || rebarType === 'basalt') rb = DB.find(d => d.id === 'basalt-rebar');
@@ -745,49 +742,54 @@
           totalM += rebarMass; totalC += rebarMass * rb.F; totalE += rebarMass * rb.e;
         }
       }
-
-      const netArea = Math.max(0, wl * wh - (0 * 0 * 0 + 0 * 0 * 0));
-      const R0 = 0.15841 + rows.reduce((s, r) => s + (parseFloat(r.delta) || 0) / (getMat(layers[rows.indexOf(r)]?.materialId)?.lam || 1), 0);
+      const R0 = 0.15841 + rows.reduce((s, r) => s + (parseFloat(r.delta) || 0) / (function(id){var m=getMat(id);return m?m.lam:1})(layers[rows.indexOf(r)]&&layers[rows.indexOf(r)].materialId), 0);
       const Qm2 = GSOP > 0 && R0 > 0 ? (0.024 * GSOP * 1) / R0 : 0;
       const V1 = Qm2 > 0 ? Qm2 / (9.3 * 0.9) : 0;
+      return { rows, totalM, totalC, totalE, R0, Qm2, V1, S, html: '<div id="report"><h1 style="color:#e8823a;font-size:22px;margin-bottom:4px;font-family:Arial,sans-serif">ЭКО — Экология Конструкций Ограждения</h1><h2 style="font-size:16px;color:#555;font-weight:400;margin-bottom:24px;font-family:Arial,sans-serif">Отчёт о расчёте теплотехнических и экологических параметров наружных стен</h2><table style="width:100%;border-collapse:collapse;margin-bottom:24px;font-family:Arial,sans-serif"><tr>' +
+        '<th style="padding:8px 10px;text-align:left;border:1px solid #ccc;font-size:13px;background:#f5f0eb;font-weight:600">№</th><th style="padding:8px 10px;text-align:left;border:1px solid #ccc;font-size:13px;background:#f5f0eb;font-weight:600">Материал</th><th style="padding:8px 10px;text-align:left;border:1px solid #ccc;font-size:13px;background:#f5f0eb;font-weight:600">ρ, кг/м³</th><th style="padding:8px 10px;text-align:left;border:1px solid #ccc;font-size:13px;background:#f5f0eb;font-weight:600">δ, м</th><th style="padding:8px 10px;text-align:left;border:1px solid #ccc;font-size:13px;background:#f5f0eb;font-weight:600">M, кг</th><th style="padding:8px 10px;text-align:left;border:1px solid #ccc;font-size:13px;background:#f5f0eb;font-weight:600">C, кгCO₂экв</th><th style="padding:8px 10px;text-align:left;border:1px solid #ccc;font-size:13px;background:#f5f0eb;font-weight:600">E, МДж</th></tr>' +
+        rows.map(r => '<tr>' + ['n','name','rho','delta','M','C','E'].map(k => '<td style="padding:8px 10px;text-align:left;border:1px solid #ccc;font-size:13px;font-family:Arial,sans-serif">' + (r[k]||'') + '</td>').join('') + '</tr>').join('') +
+        '<tr style="font-weight:700;background:#fff3eb">' + ['','','','','Итого','',''].map((v,i) => '<td style="padding:8px 10px;text-align:left;border:1px solid #ccc;font-size:13px;font-family:Arial,sans-serif">' + (v || (i===4?totalM.toFixed(1):i===5?totalC.toFixed(2):i===6?totalE.toFixed(1):'')) + '</td>').join('') + '</tr></table>' +
+        '<div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:16px;font-family:Arial,sans-serif">' +
+        [['Масса 1 м² стены', totalM.toFixed(1) + ' кг'],['R₀ усл', R0.toFixed(4) + ' м²·°С/Вт'],['CO₂ выбросы', totalC.toFixed(2) + ' кгCO₂экв/м²'],['Воплощённая энергия', totalE.toFixed(1) + ' МДж/м²'],['Газ V₁', V1.toFixed(3) + ' м³/год·м²'],['Газ Vобщ', (V1 * S).toFixed(1) + ' м³/год']]
+        .map(a => '<div style="padding:10px 14px;background:#f9f6f2;border-radius:8px;border:1px solid #e8e0d8"><div style="font-size:11px;color:#888">' + a[0] + '</div><div style="font-size:18px;font-weight:700;color:#222">' + a[1] + '</div></div>').join('') +
+        '</div><div style="margin-top:32px;font-size:11px;color:#999;text-align:center;font-family:Arial,sans-serif">IT.BGITU • 2026 • Программа ЭКО</div></div>' };
+    }
 
-      const html = `<!DOCTYPE html><html lang="ru"><head><meta charset="UTF-8"><title>Отчёт ЭКО</title><style>
-        body { font-family:Arial,sans-serif; margin:40px; color:#222; }
-        h1 { color:#e8823a; font-size:22px; margin-bottom:4px; }
-        h2 { font-size:16px; color:#555; font-weight:400; margin-bottom:24px; }
-        table { width:100%; border-collapse:collapse; margin-bottom:24px; }
-        th, td { padding:8px 10px; text-align:left; border:1px solid #ccc; font-size:13px; }
-        th { background:#f5f0eb; font-weight:600; }
-        .total-row td { font-weight:700; background:#fff3eb; }
-        .results { display:grid; grid-template-columns:1fr 1fr; gap:12px; margin-top:16px; }
-        .res-item { padding:10px 14px; background:#f9f6f2; border-radius:8px; border:1px solid #e8e0d8; }
-        .res-lbl { font-size:11px; color:#888; }
-        .res-val { font-size:18px; font-weight:700; color:#222; }
-        .footer { margin-top:32px; font-size:11px; color:#999; text-align:center; }
-      </style></head><body>
-        <h1>ЭКО — Экология Конструкций Ограждения</h1>
-        <h2>Отчёт о расчёте теплотехнических и экологических параметров наружных стен</h2>
-        <table><tr><th>№</th><th>Материал</th><th>ρ, кг/м³</th><th>δ, м</th><th>M, кг</th><th>C, кгCO₂экв</th><th>E, МДж</th></tr>
-        ${rows.map(r => `<tr><td>${r.n}</td><td>${r.name}</td><td>${r.rho}</td><td>${r.delta}</td><td>${r.M}</td><td>${r.C}</td><td>${r.E}</td></tr>`).join('')}
-        <tr class="total-row"><td colspan="4">Итого</td><td>${totalM.toFixed(1)}</td><td>${totalC.toFixed(2)}</td><td>${totalE.toFixed(1)}</td></tr></table>
-        <div class="results"><div class="res-item"><div class="res-lbl">Масса 1 м² стены</div><div class="res-val">${totalM.toFixed(1)} кг</div></div>
-        <div class="res-item"><div class="res-lbl">R₀ усл</div><div class="res-val">${R0.toFixed(4)} м²·°С/Вт</div></div>
-        <div class="res-item"><div class="res-lbl">CO₂ выбросы</div><div class="res-val">${totalC.toFixed(2)} кгCO₂экв/м²</div></div>
-        <div class="res-item"><div class="res-lbl">Воплощённая энергия</div><div class="res-val">${totalE.toFixed(1)} МДж/м²</div></div>
-        <div class="res-item"><div class="res-lbl">Газ V₁</div><div class="res-val">${V1.toFixed(3)} м³/год·м²</div></div>
-        <div class="res-item"><div class="res-lbl">Газ Vобщ</div><div class="res-val">${(V1 * S).toFixed(1)} м³/год</div></div></div>
-        <div class="footer">IT.BGITU • 2026 • Программа ЭКО</div>
-      </body></html>`;
-
-      const mimeTypes = { pdf: 'application/pdf', xlsx: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet', docx: 'application/vnd.openxmlformats-officedocument.wordprocessingml.document' };
-      const ext = { pdf: '.html', xlsx: '.html', docx: '.html' };
-      const blob = new Blob([html], { type: 'text/html' });
-      const url = URL.createObjectURL(blob);
-      const a = document.createElement('a');
-      a.href = url;
-      a.download = 'eco-report' + ext[fmt];
-      a.click();
-      URL.revokeObjectURL(url);
+    function generateReport(fmt) {
+      const data = buildReportHtml();
+      if (fmt === 'pdf') {
+        const el = document.createElement('div');
+        el.style.position = 'absolute'; el.style.left = '-9999px';
+        el.innerHTML = data.html;
+        document.body.appendChild(el);
+        html2pdf().set({ margin: 10, filename: 'eco-report.pdf', html2canvas: { scale: 2 }, jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' } }).from(el).save().then(() => { document.body.removeChild(el); });
+      } else if (fmt === 'xlsx') {
+        const wsData = [['№', 'Материал', 'ρ, кг/м³', 'δ, м', 'M, кг', 'C, кгCO₂экв', 'E, МДж']];
+        data.rows.forEach(r => wsData.push([r.n, r.name, r.rho, r.delta, r.M, r.C, r.E]));
+        wsData.push(['', '', '', 'Итого', data.totalM.toFixed(1), data.totalC.toFixed(2), data.totalE.toFixed(1)]);
+        const ws = XLSX.utils.aoa_to_sheet(wsData);
+        const wb = XLSX.utils.book_new();
+        XLSX.utils.book_append_sheet(wb, ws, 'Отчёт');
+        XLSX.writeFile(wb, 'eco-report.xlsx');
+      } else if (fmt === 'docx') {
+        const { Document, Packer, Paragraph, Table, TableRow, TableCell, TextRun, WidthType, AlignmentType, HeadingLevel, BorderStyle } = window.docx || {};
+        if (!Document) { alert('Библиотека docx не загружена. Скачайте отчёт как PDF/XLSX.'); return; }
+        const rows = data.rows;
+        const headerRow = new TableRow({ children: ['№','Материал','ρ, кг/м³','δ, м','M, кг','C, кгCO₂экв','E, МДж'].map(h => new TableCell({ children: [new Paragraph({ children: [new TextRun({ text: h, bold: true, size: 20 })] })] })) });
+        const dataRows = rows.map(r => new TableRow({ children: [r.n, r.name, r.rho, r.delta, r.M, r.C, r.E].map(v => new TableCell({ children: [new Paragraph({ children: [new TextRun({ text: String(v||''), size: 18 })] })] })) }));
+        const totalRow = new TableRow({ children: ['','','','Итого', data.totalM.toFixed(1), data.totalC.toFixed(2), data.totalE.toFixed(1)].map(v => new TableCell({ children: [new Paragraph({ children: [new TextRun({ text: String(v), size: 18, bold: true })] })] })) });
+        const doc = new Document({ sections: [{ children: [
+          new Paragraph({ children: [new TextRun({ text: 'ЭКО — Экология Конструкций Ограждения', size: 28, color: 'E8823A', bold: true })], heading: HeadingLevel.HEADING_1 }),
+          new Paragraph({ children: [new TextRun({ text: 'Отчёт о расчёте теплотехнических и экологических параметров наружных стен', size: 20, color: '555555' })] }),
+          new Table({ rows: [headerRow, ...dataRows, totalRow], width: { size: 100, type: WidthType.PERCENTAGE } }),
+          ...['Масса 1 м² стены', 'R₀ усл (м²·°С/Вт)', 'CO₂ выбросы (кгCO₂экв/м²)', 'Воплощённая энергия (МДж/м²)', 'Газ V₁ (м³/год·м²)', 'Газ Vобщ (м³/год)'].map((t,i) => new Paragraph({ children: [new TextRun({ text: t + ': ', bold: true, size: 20 }), new TextRun({ text: [data.totalM.toFixed(1)+' кг', data.R0.toFixed(4), data.totalC.toFixed(2), data.totalE.toFixed(1), data.V1.toFixed(3), (data.V1*data.S).toFixed(1)][i], size: 20 })] }))
+        ]}] });
+        Packer.toBlob(doc).then(blob => {
+          const url = URL.createObjectURL(blob);
+          const a = document.createElement('a'); a.href = url; a.download = 'eco-report.docx'; a.click();
+          URL.revokeObjectURL(url);
+        });
+      }
     }
 
     importBtn.addEventListener('click', () => {
