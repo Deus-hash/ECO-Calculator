@@ -805,13 +805,21 @@
 
       if (fmt === 'pdf') {
         const el = document.createElement('div');
-        el.style.width = '800px'; el.style.padding = '20px'; el.style.background = '#fff';
+        el.style.width = '800px'; el.style.padding = '30px'; el.style.background = '#fff';
         el.style.position = 'fixed'; el.style.top = '0'; el.style.left = '0'; el.style.zIndex = '9999';
         el.innerHTML = html;
         document.body.appendChild(el);
         setTimeout(() => {
-          html2pdf().set({ margin: 10, filename: 'eco-calculator-report.pdf', html2canvas: { scale: 2, width: 800, height: el.scrollHeight }, jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' } }).from(el).save().then(() => { document.body.removeChild(el); });
-        }, 1000);
+          html2canvas(el, { scale: 2, width: 800 }).then(canvas => {
+            const imgData = canvas.toDataURL('image/jpeg', 0.95);
+            const pdf = new jspdf.jsPDF({ unit: 'mm', format: 'a4', orientation: 'portrait' });
+            const pdfW = 190;
+            const pdfH = (canvas.height * pdfW) / canvas.width;
+            pdf.addImage(imgData, 'JPEG', 10, 10, pdfW, pdfH);
+            pdf.save('eco-calculator-report.pdf');
+            document.body.removeChild(el);
+          });
+        }, 500);
       } else {
         const mime = fmt === 'xlsx' ? 'application/vnd.ms-excel' : 'application/msword';
         const ext = fmt === 'xlsx' ? 'xls' : 'doc';
