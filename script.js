@@ -29,6 +29,7 @@
       {id:'mw160',name:'Минераловатные изделия из каменного волокна',rho:160,lam:0.047,F:1.35,e:29.6,color:'#b8a888',tex:'tex-insulation'},
       {id:'mw140',name:'Минераловатные изделия из каменного волокна',rho:140,lam:0.046,F:1.31,e:27.4,color:'#bcac8c',tex:'tex-insulation'},
       {id:'mw120',name:'Минераловатные изделия из каменного волокна',rho:120,lam:0.046,F:1.29,e:26.4,color:'#c0b090',tex:'tex-insulation'},
+      {id:'mw100',name:'Минераловатные изделия из каменного волокна',rho:100,lam:0.044,F:1.26,e:24.5,color:'#c4b494',tex:'tex-insulation'},
       {id:'mw80',name:'Минераловатные изделия из каменного волокна',rho:80,lam:0.045,F:1.26,e:24.5,color:'#c8b898',tex:'tex-insulation'},
       {id:'mw60',name:'Минераловатные изделия из каменного волокна',rho:60,lam:0.044,F:1.22,e:21.5,color:'#ccbc9c',tex:'tex-insulation'},
       {id:'mw50',name:'Минераловатные изделия из каменного волокна',rho:50,lam:0.043,F:1.19,e:19.2,color:'#d0c0a0',tex:'tex-insulation'},
@@ -147,7 +148,7 @@
       {id:'cer-brick1600',name:'Кладка из керамического пустотного кирпича на цементно-песчаном растворе',rho:1600,lam:0.64,F:0.35,e:3.25,color:'#b87048',tex:'tex-brick'},
       {id:'cer-brick1400',name:'Кладка из керамического пустотного кирпича на цементно-песчаном растворе',rho:1400,lam:0.58,F:0.28,e:3.15,color:'#ba784e',tex:'tex-brick'},
       {id:'cer-brick1200',name:'Кладка из керамического пустотного кирпича на цементно-песчаном растворе',rho:1200,lam:0.52,F:0.21,e:2.828,color:'#bc8054',tex:'tex-brick'},
-      {id:'sil-brick1800',name:'Кладка из силикатного кирпича на цементно-песчаном растворе',rho:1800,lam:1.05,F:0.138,e:1.565,color:'#c8c0b0',tex:'tex-brick'},
+      {id:'sil-brick1800',name:'Кладка из силикатного кирпича на цементно-песчаном растворе',rho:1800,lam:1.05,F:0.144,e:1.621,color:'#c8c0b0',tex:'tex-brick'},
       {id:'sil-brick1960',name:'Кладка из силикатного кирпича на цементно-песчаном растворе',rho:1960,lam:1.48,F:0.144,e:1.585,color:'#c4bcac',tex:'tex-brick'},
       {id:'sil-brick1500',name:'Кладка из силикатного кирпича пустотного на цементно-песчаном растворе',rho:1500,lam:0.81,F:0.134,e:1.521,color:'#ccc4b4',tex:'tex-brick'},
       {id:'sil-brick1400',name:'Кладка из силикатного четырнадцати-пустотного на цементно-песчаном растворе',rho:1400,lam:0.76,F:0.13,e:1.51,color:'#d0c8b8',tex:'tex-brick'},
@@ -159,7 +160,7 @@
       {id:'lvl',name:'Клееный брус (LVL)',rho:600,lam:0.1,F:2.28,e:34.3,color:'#8a6a4a',tex:'tex-wood'},
       {id:'tile2000',name:'Облицовка керамической плиткой',rho:2000,lam:1.4,F:1.4,e:15.4,color:'#c0b0a0',tex:'tex-concrete'},
       {id:'wallpaper',name:'Обои',rho:450,lam:0.045,F:1.93,e:36.4,color:'#d0c8b8',tex:'tex-sand'},
-      {id:'rebar-steel',name:'Сталь стержневая арматурная',rho:7850,lam:58,F:2.4,e:24.2,color:'#7a7a80',tex:'tex-concrete'},
+      {id:'rebar-steel',name:'Сталь стержневая арматурная',rho:7850,lam:58,F:2.3,e:24.5,color:'#7a7a80',tex:'tex-concrete'},
       {id:'mesh-steel',name:'Сварная сетка',rho:7850,lam:58,F:2.1,e:23.8,color:'#7a7a80',tex:'tex-concrete'},
       {id:'zinc-steel',name:'Оцинкованные изделия',rho:7850,lam:58,F:2.28,e:29.1,color:'#8a8a90',tex:'tex-concrete'},
       {id:'stainless',name:'Нержавеющая сталь',rho:7850,lam:16,F:16.1,e:56.7,color:'#8a8a90',tex:'tex-concrete'},
@@ -610,7 +611,8 @@
       const wc = parseInt(document.getElementById('window-count').value) || 0;
       const ww = parseFloat(document.getElementById('window-width').value) || 0;
       const wwh = parseFloat(document.getElementById('window-height').value) || 0;
-      const waste = parseFloat(document.getElementById('waste').value) || 0;
+      const wasteEl = document.getElementById('waste');
+      const waste = wasteEl ? (parseFloat(wasteEl.value) || 0) : 5;
       const GSOP = parseFloat(document.getElementById('gsop').value) || 0;
       const S = parseFloat(document.getElementById('wall-area-s').value) || 0;
       const rebarType = document.getElementById('rebar-type').value;
