@@ -607,6 +607,7 @@
     }
 
     function calc() {
+      try {
       renderWall();
       const wl = parseFloat(document.getElementById('wall-length').value) || 0;
       const wh = parseFloat(document.getElementById('wall-height').value) || 0;
@@ -616,7 +617,8 @@
       const wc = parseInt(document.getElementById('window-count').value) || 0;
       const ww = parseFloat(document.getElementById('window-width').value) || 0;
       const wwh = parseFloat(document.getElementById('window-height').value) || 0;
-      const waste = parseFloat(document.getElementById('waste').value) || 0;
+      const wasteEl = document.getElementById('waste');
+      const waste = wasteEl ? (parseFloat(wasteEl.value) || 0) : 5;
       const GSOP = parseFloat(document.getElementById('gsop').value) || 0;
       const S = parseFloat(document.getElementById('wall-area-s').value) || 0;
       const rebarType = document.getElementById('rebar-type').value;
@@ -682,6 +684,7 @@
       document.getElementById('res-energy-total').textContent = (Etotal * totalWallArea).toFixed(1);
       document.getElementById('res-gas').textContent = V1.toFixed(3);
       document.getElementById('res-gas-total').textContent = Vtotal.toFixed(1);
+    } catch(e) { console.error('calc error:', e); }
     }
 
     document.querySelectorAll('input, select').forEach(el => el.addEventListener('input', calc));

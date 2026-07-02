@@ -602,6 +602,7 @@
     }
 
     function calc() {
+      try {
       renderWall();
       const wl = parseFloat(document.getElementById('wall-length').value) || 0;
       const wh = parseFloat(document.getElementById('wall-height').value) || 0;
@@ -663,6 +664,7 @@
       });
 
       renderDetailTable(layers, rebarType, rebarMass);
+    } catch(e) { console.error('calc error:', e); }
     }
 
     function localCalc(layers, rebarType, rebarMass, GSOP, S, wl, wh, dc, dw, dh, wc, ww, wwh) {
