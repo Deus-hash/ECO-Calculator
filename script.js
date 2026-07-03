@@ -766,10 +766,13 @@
       const rebarType = document.getElementById('rebar-type').value;
       const rebarMass = parseFloat(document.getElementById('rebar-mass').value) || 0;
       const rebarNames = { steel: 'Металлическая кладочная сетка', fiberglass: 'Стеклопластиковая арматура', basalt: 'Базальтопластиковая арматура', carbon: 'Углепластиковая арматура' };
+      const isEng = document.body.dataset.mode === 'engineer';
+
+      function v(val, d) { return isEng ? val : val.toFixed(d); }
 
       const html = '<!DOCTYPE html><html lang="ru"><head><meta charset="UTF-8"><title>ECO.Calculator — Отчёт о расчёте</title>' +
         '<style>*{color:#000!important}h1{color:#e8823a!important}.sub,.res-lbl,.footer{color:#666!important}body{font-family:Arial,sans-serif;margin:30px}' +
-        'h1{font-size:22px;margin:0 0 2px;color:#e8823a;font-weight:700;color:#e8823a}' +
+        'h1{font-size:22px;margin:0 0 2px;color:#e8823a;font-weight:700}' +
         'h2{font-size:16px;margin:24px 0 8px;color:#333}' +
         '.sub{color:#666;font-size:13px;margin-bottom:24px}' +
         'table{width:100%;border-collapse:collapse;margin-bottom:16px;font-size:13px}' +
@@ -797,22 +800,22 @@
 
         '<div class="sec-title">Конструкция стены</div>' +
         '<table><tr><th>#</th><th>Материал</th><th>ρ, кг/м³</th><th>δ, мм</th><th>M, кг</th><th>C, кгCO₂экв</th><th>E, МДж</th></tr>' +
-        data.        rows.map(r => '<tr><td>' + (r.n||'') + '</td><td>' + r.name + '</td><td>' + r.rho + '</td><td>' + (document.body.dataset.mode === 'engineer' ? (parseFloat(r.delta)*1000).toFixed(6) : (parseFloat(r.delta)*1000).toFixed(0)) + '</td><td>' + r.M + '</td><td>' + r.C + '</td><td>' + r.E + '</td></tr>').join('') +
-        '<tr style="font-weight:700"><td colspan="4">Итого</td><td>' + data.totalM.toFixed(1) + '</td><td>' + data.totalC.toFixed(2) + '</td><td>' + data.totalE.toFixed(1) + '</td></tr></table>' +
+        data.rows.map(r => '<tr><td>' + (r.n||'') + '</td><td>' + r.name + '</td><td>' + r.rho + '</td><td>' + (isEng ? (parseFloat(r.delta)*1000) : (parseFloat(r.delta)*1000).toFixed(0)) + '</td><td>' + r.M + '</td><td>' + r.C + '</td><td>' + r.E + '</td></tr>').join('') +
+        '<tr style="font-weight:700"><td colspan="4">Итого</td><td>' + v(data.totalM,1) + '</td><td>' + v(data.totalC,2) + '</td><td>' + v(data.totalE,1) + '</td></tr></table>' +
 
         '<div class="sec-title">Результаты</div>' +
         '<div class="res-grid">' +
-        [['Масса 1 м²', (document.body.dataset.mode === 'engineer' ? data.totalM.toFixed(6) : data.totalM.toFixed(3)) + ' кг'],
-         ['Общая масса стен', (document.body.dataset.mode === 'engineer' ? (data.totalM * data.S / 1000).toFixed(6) : (data.totalM * data.S / 1000).toFixed(3)) + ' т'],
-         ['R₀ усл', document.body.dataset.mode === 'engineer' ? data.R0.toFixed(6) : data.R0.toFixed(5)],
-         ['Qст.год', document.body.dataset.mode === 'engineer' ? data.Qm2.toFixed(6) : data.Qm2.toFixed(4)],
-         ['Qгод общие', document.body.dataset.mode === 'engineer' ? (data.Qm2 * data.S).toFixed(6) : (data.Qm2 * data.S).toFixed(3)],
-         ['CO₂ выбросы (на 1 м²)', document.body.dataset.mode === 'engineer' ? data.totalC.toFixed(6) : data.totalC.toFixed(4)],
-         ['CO₂ выбросы общие', document.body.dataset.mode === 'engineer' ? (data.totalC * data.S).toFixed(6) : (data.totalC * data.S).toFixed(3)],
-         ['Энергия (на 1 м²)', document.body.dataset.mode === 'engineer' ? data.totalE.toFixed(6) : data.totalE.toFixed(3)],
-         ['Энергия общая', document.body.dataset.mode === 'engineer' ? (data.totalE * data.S).toFixed(6) : (data.totalE * data.S).toFixed(3)],
-         ['Расход газа V₁', document.body.dataset.mode === 'engineer' ? data.V1.toFixed(6) : data.V1.toFixed(5)],
-         ['Расход газа Vобщ', document.body.dataset.mode === 'engineer' ? (data.V1 * data.S).toFixed(6) : (data.V1 * data.S).toFixed(3)]]
+        [['Масса 1 м²', v(data.totalM,3) + ' кг'],
+         ['Общая масса стен', v(data.totalM * data.S / 1000,3) + ' т'],
+         ['R₀ усл', isEng ? data.R0 : data.R0.toFixed(5)],
+         ['Qст.год', isEng ? data.Qm2 : data.Qm2.toFixed(4)],
+         ['Qгод общие', isEng ? data.Qm2 * data.S : (data.Qm2 * data.S).toFixed(3)],
+         ['CO₂ выбросы (на 1 м²)', v(data.totalC,4)],
+         ['CO₂ выбросы общие', v(data.totalC * data.S,3)],
+         ['Энергия (на 1 м²)', v(data.totalE,3)],
+         ['Энергия общая', v(data.totalE * data.S,3)],
+         ['Расход газа V₁', isEng ? data.V1 : data.V1.toFixed(5)],
+         ['Расход газа Vобщ', isEng ? data.V1 * data.S : (data.V1 * data.S).toFixed(3)]]
         .map(a => '<div class="res-item"><div class="res-lbl">' + a[0] + '</div><div class="res-val">' + a[1] + '</div></div>').join('') +
         '</div>' +
         '<div class="footer">IT.BGITU • 2026 • Программа ЭКО</div>' +
@@ -836,8 +839,8 @@
           });
         }, 500);
       } else {
-        const mime = fmt === 'xlsx' ? 'application/vnd.ms-excel' : fmt === 'doc' ? 'application/msword' : 'application/vnd.openxmlformats-officedocument.wordprocessingml.document';
-        const ext = fmt === 'xlsx' ? 'xlsx' : fmt === 'doc' ? 'doc' : 'docx';
+        const mime = fmt === 'xlsx' ? 'application/vnd.ms-excel' : fmt === 'docx' ? 'application/vnd.openxmlformats-officedocument.wordprocessingml.document' : 'application/msword';
+        const ext = fmt === 'xlsx' ? 'xls' : fmt === 'docx' ? 'docx' : 'doc';
         const blob = new Blob([html], { type: mime });
         const url = URL.createObjectURL(blob);
         const a = document.createElement('a');
@@ -846,7 +849,6 @@
         a.click();
         URL.revokeObjectURL(url);
       }
-    }
 
     importBtn.addEventListener('click', () => {
       if (!selectedFormat) return;
