@@ -821,8 +821,8 @@
           });
         }, 500);
       } else {
-        const mime = fmt === 'xlsx' ? 'application/vnd.ms-excel' : 'application/msword';
-        const ext = fmt === 'xlsx' ? 'xls' : 'doc';
+        const mime = fmt === 'xlsx' ? 'application/vnd.ms-excel' : fmt === 'doc' ? 'application/msword' : 'application/vnd.openxmlformats-officedocument.wordprocessingml.document';
+        const ext = fmt === 'xlsx' ? 'xlsx' : fmt === 'doc' ? 'doc' : 'docx';
         const blob = new Blob([html], { type: mime });
         const url = URL.createObjectURL(blob);
         const a = document.createElement('a');
